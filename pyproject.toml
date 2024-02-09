@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "wb-data-service"
+version = "0.0.1"
+description = ""
+authors = ["Your Name <you@example.com>"]
+license = "MIT License"
+readme = "README.md"
+packages = [{include = "wb_data_service", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.2"
+requests = "^2.31.0"
+sqlalchemy = "^2.0.25"
+asyncpg = "^0.29.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
