@@ -11,7 +11,7 @@ from uvicorn import run
 from wb_data_service.api import api_router
 from wb_data_service.config import settings
 from wb_data_service.database.deps import db_metadata_create_all
-from wb_data_service.wb_data_logging import setup_logging
+from wb_data_service.wb_data_logging import setup_logging, WbDataRouterLoggerMiddleware
 from wb_data_shared.exceptions.api_error import WbDataException, WbDataErrorCode
 from wb_data_shared.schemas.protocol import WbDataErrorResponse
 
@@ -76,10 +76,9 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 
-if settings.DB_METADATA_CREATE_ALL:
-    @api.on_event("startup")
-    async def startup_event_db_metadata_create_all():
-        await db_metadata_create_all()
+api.middleware("http")(
+    WbDataRouterLoggerMiddleware()
+)
 
 
 api.include_router(api_router, prefix=settings.API_V1_STR)

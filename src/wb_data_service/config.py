@@ -21,8 +21,8 @@ class Settings(BaseSettings):
 
     DB_SCHEMA: str = "postgresql"
     DB_DRIVER: str = "asyncpg"
-    DB_HOST: str = "localhost"
-    DB_PORT: str = "5435"
+    DB_HOST: str = "wb_db"
+    DB_PORT: str = "5432"
     DB_SSL: str = "prefer"  # disable, allow, prefer, require, verify-ca, verify-full
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "postgres"
@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = 75
     DB_MAX_OVERFLOW: int = 20
 
-    DB_METADATA_CREATE_ALL: bool = False
+    DB_METADATA_CREATE_ALL: bool = True
 
     BACKEND_CORS_ORIGINS: list[str] = ["http://127.0.0.1:8000",
                                        "http://localhost:8000"]
