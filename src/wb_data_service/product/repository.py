@@ -2,8 +2,8 @@ from datetime import timedelta
 from http import HTTPStatus
 from typing import Sequence
 
-from sqlalchemy import select
-from sqlalchemy.sql.functions import count, sum, min, max
+from sqlalchemy import select, Row
+from sqlalchemy.sql.functions import count, sum, min, max, func
 
 from wb_data_service.database.repository import BaseRepository
 from wb_data_service.database.utils import (
@@ -30,6 +30,10 @@ class ProductRepository(BaseRepository):
         res = await self.session.get(Product, nm_id)
         return res
 
+    async def has_product(self, nm_id: int) -> bool:
+        res = await self.session.get(Product, nm_id)
+        return res is not None
+
     async def get_all_products(self) -> Sequence[Product]:
         query = select(Product)
         res = await self.session.execute(query)
@@ -48,17 +52,24 @@ class ProductRepository(BaseRepository):
 
         return res.scalar()
 
-    async def get_count_products_grouped(self, group_field) -> Sequence:
-        query = select(group_field, count(Product.nm_id)).group_by(group_field)
+    async def get_count_products_grouped(self, *group_fields) -> Sequence[Row]:
+        query = select(*group_fields, count(Product.nm_id)).group_by(*group_fields)
         res = await self.session.execute(query)
 
-        return res.scalars().all()
+        return res.all()
 
-    async def get_quantity_products_grouped(self, group_field) -> Sequence:
-        query = select(group_field, sum(Product.quantity)).group_by(group_field)
+    async def get_quantity_products_grouped(self, *group_fields) -> Sequence[Row]:
+        query = select(*group_fields, sum(Product.quantity)).group_by(*group_fields)
         res = await self.session.execute(query)
 
-        return res.scalars().all()
+        return res.all()
+
+    @menage_db_not_found_result_method(NotFoundResultMode.EXCEPTION, ex=_product_not_found_exception)
+    async def get_quantity_product_by_nm_id(self, nm_id: int) -> int:
+        query = select(sum(Product.quantity)).where(Product.nm_id == nm_id)
+        res = await self.session.execute(query)
+
+        return res.scalar()
 
     async def get_product_prices(self, nm_id: int) -> Sequence[ProductPrice]:
         query = select(ProductPrice).where(ProductPrice.nm_id == nm_id).order_by(ProductPrice.dt)
@@ -66,12 +77,27 @@ class ProductRepository(BaseRepository):
 
         return res.scalars().all()
 
-    async def get_product_prices_grouped(self, group_field) -> Sequence:
-        query = (select(group_field, ProductPrice).join(Product, ProductPrice.nm_id == Product.nm_id)
-                 .order_by(ProductPrice.dt).group_by(group_field))
+    async def get_all_product_prices(self) -> Sequence[ProductPrice]:
+        query = select(ProductPrice)
         res = await self.session.execute(query)
 
         return res.scalars().all()
+
+    async def get_product_prices_grouped(self, *group_fields) -> Sequence[Row]:
+        query = (select(*group_fields, ProductPrice.dt, func.avg(ProductPrice.price)).join(Product, ProductPrice.nm_id == Product.nm_id)
+                 .order_by(ProductPrice.dt).group_by(*group_fields, ProductPrice.dt))
+        res = await self.session.execute(query)
+
+        return res.all()
+
+    async def get_product_price_grouped_for_product_by_nm_id(self, nm_id: int, *group_fields) -> Sequence[Row]:
+        product: Product = await self.get_product_by_nm_id(nm_id)
+        query = (select(*group_fields, ProductPrice.dt, func.avg(ProductPrice.price)).join(Product, ProductPrice.nm_id == Product.nm_id)
+                 .where(*[item == getattr(product, str(item).split(".")[-1]) for item in group_fields])
+                 .order_by(ProductPrice.dt).group_by(*group_fields, ProductPrice.dt))
+        res = await self.session.execute(query)
+
+        return res.all()
 
     async def get_min_max_product_price_on_interval(self, nm_id: int, monthly_interval: int) -> (int, int):
         months_ago = utcnow() - timedelta(days=monthly_interval * 30)
@@ -79,7 +105,7 @@ class ProductRepository(BaseRepository):
                  .where(ProductPrice.nm_id == nm_id and ProductPrice.dt >= months_ago))
         res = await self.session.execute(query)
 
-        return res.scalars().all()
+        return res.all()[0]
 
     @menage_db_commit_method(CommitMode.FLUSH)
     async def create_product(self, create_product: WbCreateProductModel) -> Product:

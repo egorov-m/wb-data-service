@@ -14,9 +14,12 @@ class WbDataErrorCode(IntEnum):
     # 0-1000: general errors
     GENERIC_ERROR = 0
     NOT_FOUND = 1
+    UNEXPECTED_INTERACTION_ERROR_WITH_WILDBERRIES = 2
+    WILDBERRIES_PRODUCT_NOT_FOUND = 3
 
     # 1001-2000: product errors
     PRODUCT_NOT_FOUND = 1001
+    PRODUCT_ALREADY_EXIST = 1002
 
 
 class WbDataException(Exception):

@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
 
 from wb_data_service.database.core import Base, TimeStampMixin
 from wb_data_shared.schemas.protocol import WbProductModel, WbProductPriceModel
@@ -18,9 +17,7 @@ class Product(Base, TimeStampMixin):
     rating = Column(Float, nullable=False)
     feedbacks = Column(Integer, nullable=False)
     colors = Column(String, nullable=True)
-    quantity = Column(String, nullable=False)
-
-    prices = relationship("ProductPrice", back_populates="product")
+    quantity = Column(Integer, nullable=False)
 
     def to_protocol_product(self):
         return WbProductModel(
@@ -47,8 +44,6 @@ class ProductPrice(Base):
     nm_id = Column(ForeignKey("product.nm_id"), nullable=False)
     dt = Column(DateTime, nullable=False)
     price = Column(Integer, nullable=False)
-
-    prices = relationship("Product", back_populates="prices")
 
     def to_protocol_product_price(self):
         return WbProductPriceModel(

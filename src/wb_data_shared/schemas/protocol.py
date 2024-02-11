@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import StrEnum
 from typing import Optional
 
 from wb_data_shared.exceptions.api_error import WbDataErrorCode
@@ -51,3 +52,17 @@ class WbProductPriceModel(WbDataBaseModel):
     nm_id: int
     dt: datetime
     price: int
+
+
+class ProductFieldsForGroup(StrEnum):
+    name = "name"
+    brand = "brand"
+    brand_id = "brand_id"
+    site_brand_id = "site_brand_id"
+    supplier_id = "supplier_id"
+    sale = "sale"
+    price = "price"
+    sale_price = "sale_price"
+    rating = "rating"
+    feedbacks = "feedbacks"
+    colors = "colors"
