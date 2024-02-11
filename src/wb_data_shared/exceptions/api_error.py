@@ -8,10 +8,15 @@ class WbDataErrorCode(IntEnum):
 
         Ranges:
                0-1000: general errors
+            1001-2000: product errors
     """
 
     # 0-1000: general errors
     GENERIC_ERROR = 0
+    NOT_FOUND = 1
+
+    # 1001-2000: product errors
+    PRODUCT_NOT_FOUND = 1001
 
 
 class WbDataException(Exception):

@@ -50,7 +50,3 @@ class TimeStampMixin:
     @classmethod
     def __declare_last__(cls):
         event.listen(cls, "before_update", cls._updated_at)
-
-
-class DeletedMixin(TimeStampMixin):
-    is_deleted = Column(Boolean, nullable=False, default=False)
