@@ -1,13 +1,14 @@
 from pathlib import Path
+from typing import Optional, Literal
 
+from pydantic import constr
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "WbDataService"
-    PROJECT_DESCRIPTION: str = "Welcome to WbDataService's API documentation!"
+    PROJECT_NAME: str = "WbDataTgBot"
+    PROJECT_DESCRIPTION: str = "WbDataTgBot for WbDataService"
     VERSION: str = "0.0.1"
-    API_V1_STR: str = "/api/v1"
     API_SERVERS: list = [
         {
             "url": "http://localhost:8000",
@@ -19,28 +20,19 @@ class Settings(BaseSettings):
         }
     ]
 
-    LOGGER_NAME: str = "wb_data_logger"
+    LOGGER_NAME: str = "wb_data_tg_bot_logger"
     LOG_LEVEL: str = "info"
     LOG_FILENAME: str = "wb_data.log"
 
-    DB_SCHEMA: str = "postgresql"
-    DB_DRIVER: str = "asyncpg"
-    DB_HOST: str = "wb_db"
-    DB_PORT: str = "5432"
-    DB_SSL: str = "prefer"  # disable, allow, prefer, require, verify-ca, verify-full
-    DB_USER: str = "postgres"
-    DB_PASSWORD: str = "postgres"
-    DB_NAME: str = "wb_db"
-
-    DB_POOL_SIZE: int = 75
-    DB_MAX_OVERFLOW: int = 20
-
-    DB_METADATA_CREATE_ALL: bool = True
+    TELEGRAM_BOT_MODE: Literal["webhook", "pulling"] = "pulling"
+    TELEGRAM_BOT_WEBHOOK_URL: Optional[str] = None
+    TELEGRAM_BOT_PULLING_DELAY_SECONDS: float = 0.1
+    TELEGRAM_BOT_TOKEN: constr(pattern=r"^\d{10}:[a-zA-Z0-9_-]{35}$")
 
     BACKEND_CORS_ORIGINS: list[str] = ["http://127.0.0.1:8000",
                                        "http://localhost:8000",
                                        "https://poorly-ideal-cobra.ngrok-free.app"]
-    SERVER_PORT: int = 8000
+    SERVER_PORT: int = 8001
 
     def get_db_url(self):
         return (f"{self.DB_SCHEMA}+{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@"

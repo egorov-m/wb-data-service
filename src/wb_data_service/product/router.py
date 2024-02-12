@@ -169,7 +169,7 @@ async def stat_product_price_history(db_session: DbSession,
     description="Get the minimum maximum price for the specified interval in months"
 )
 async def stat_product_min_max_price_on_monthly_interval(db_session: DbSession,
-                                                         nm_id: Annotated[Optional[int], Query(description="Product id from Wildberries")] = None,
+                                                         nm_id: Annotated[Optional[int], Query(description="Product id from Wildberries")],
                                                          monthly_interval: Annotated[int, Query(ge=1, le=6, description="Count of months")] = 6):
     product_repository = ProductRepository(db_session)
     min_price, max_price = await product_repository.get_min_max_product_price_on_interval(nm_id, monthly_interval)
