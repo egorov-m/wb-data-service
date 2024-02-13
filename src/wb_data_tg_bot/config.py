@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "info"
     LOG_FILENAME: str = "wb_data.log"
 
+    WB_DATA_SERVICE_HOST_PORT: str = "http://localhost:8000"
+
     TELEGRAM_BOT_MODE: Literal["webhook", "pulling"] = "pulling"
     TELEGRAM_BOT_WEBHOOK_URL: Optional[str] = None
     TELEGRAM_BOT_PULLING_DELAY_SECONDS: float = 0.1

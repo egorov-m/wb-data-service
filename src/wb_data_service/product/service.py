@@ -39,10 +39,12 @@ class ProductService:
     def load_model(self, nm_id: int):
         self._load_data(nm_id)
         assert self._detail_response is not None
-        assert self._price_history_response is not None
 
         self.create_product_model = self._resp_detail_to_product_model(self._detail_response)
-        self.price_history_model = self._resp_price_history_to_products_price_model(self._price_history_response, nm_id)
+        if self._price_history_response is not None:
+            self.price_history_model = self._resp_price_history_to_products_price_model(self._price_history_response, nm_id)
+        else:
+            self.price_history_model = []
 
     async def upload_to_db(self):
         assert self.create_product_model is not None
@@ -58,13 +60,16 @@ class ProductService:
 
         try:
             self._detail_response = self._req_detail.get_detail()
-            self._price_history_response = self._req_price_history.get_price_history()
         except WbError as e:
             raise WbDataException(
                 message=f"Internal server error: {e.__class__.__name__}.",
                 error_code=WbDataErrorCode.UNEXPECTED_INTERACTION_ERROR_WITH_WILDBERRIES,
                 http_status_code=HTTPStatus.SERVICE_UNAVAILABLE
             )
+        try:
+            self._price_history_response = self._req_price_history.get_price_history()
+        except WbError as e:
+            self._price_history_response = None
 
     @classmethod
     def _resp_detail_to_product_model(cls, resp: Response) -> WbCreateProductModel:
