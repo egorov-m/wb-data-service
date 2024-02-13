@@ -12,6 +12,7 @@ jobs:
       - name: Push to GitHub Packages WbDataServiceImage
         uses: docker/build-push-action@v2
         with:
+          context: .
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           dockerfile: ./docker/Dockerfile.wb_data_service
@@ -21,6 +22,7 @@ jobs:
       - name: Push to GitHub Packages WbDataTgBotImage
         uses: docker/build-push-action@v2
         with:
+          context: .
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           dockerfile: ./docker/Dockerfile.wb_data_tg_bot
