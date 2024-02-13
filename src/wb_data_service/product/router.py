@@ -85,7 +85,7 @@ stat_router = APIRouter()
 
 @stat_router.post(
     "/count",
-    response_model=tuple | int,
+    response_model=list[tuple] | int,
     status_code=status.HTTP_200_OK,
     summary="Get count",
     description="Get the count of product in the base. Specify the fields in the required order for grouping, "
@@ -105,7 +105,7 @@ async def stat_count_products(db_session: DbSession,
 
 @stat_router.post(
     "/quantity",
-    response_model=tuple | int,
+    response_model=list[tuple] | int,
     status_code=status.HTTP_200_OK,
     summary="Get quantity",
     description="Get the  of quantity in stock on Wildberries by current database. "
@@ -129,7 +129,7 @@ async def stat_quantity_products(db_session: DbSession,
 
 @stat_router.post(
     "/price-history",
-    response_model=tuple | list[WbProductPriceModel],
+    response_model=list[tuple] | list[WbProductPriceModel],
     status_code=status.HTTP_200_OK,
     summary="Get price history",
     description="Get the price history of products from the database. Specify the product id and grouping "
@@ -155,7 +155,7 @@ async def stat_product_price_history(db_session: DbSession,
         prices = await product_repository.get_product_prices(nm_id)
         prices = [item.to_protocol_product_price() for item in prices]
     else:
-        prices = await product_repository.get_all_products()
+        prices = await product_repository.get_all_product_prices()
         prices = [item.to_protocol_product_price() for item in prices]
 
     return prices
@@ -169,7 +169,7 @@ async def stat_product_price_history(db_session: DbSession,
     description="Get the minimum maximum price for the specified interval in months"
 )
 async def stat_product_min_max_price_on_monthly_interval(db_session: DbSession,
-                                                         nm_id: Annotated[Optional[int], Query(description="Product id from Wildberries")] = None,
+                                                         nm_id: Annotated[Optional[int], Query(description="Product id from Wildberries")],
                                                          monthly_interval: Annotated[int, Query(ge=1, le=6, description="Count of months")] = 6):
     product_repository = ProductRepository(db_session)
     min_price, max_price = await product_repository.get_min_max_product_price_on_interval(nm_id, monthly_interval)

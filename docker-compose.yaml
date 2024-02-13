@@ -9,6 +9,16 @@ services:
       - "8000:8000"
     networks:
       - wb
+  wb_data_tg_bot:
+    container_name: "wb_data_tg_bot"
+    build:
+      dockerfile: ./docker/Dockerfile.wb_data_tg_bot
+    ports:
+      - "8005:8005"
+    env_file:
+      - .env
+    networks:
+      - wb
   wb_db:
     container_name: "wb_db"
     image: postgres:15.5-alpine
