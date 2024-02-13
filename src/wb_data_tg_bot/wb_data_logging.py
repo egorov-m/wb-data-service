@@ -1,7 +1,6 @@
 from logging import basicConfig
 
-from wb_data_service.config import settings
-
+from wb_data_tg_bot.config import settings
 
 LOG_FORMAT = "%(asctime)s - [%(levelname)s] %(name)s: %(message)s"
 

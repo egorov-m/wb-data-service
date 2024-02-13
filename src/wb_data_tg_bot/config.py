@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "info"
     LOG_FILENAME: str = "wb_data.log"
 
-    WB_DATA_SERVICE_HOST_PORT: str = "http://localhost:8000"
+    WB_DATA_SERVICE_HOST_PORT: str = "http://wb_data_service:8000"
 
     TELEGRAM_BOT_MODE: Literal["webhook", "pulling"] = "pulling"
     TELEGRAM_BOT_WEBHOOK_URL: Optional[str] = None
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: list[str] = ["http://127.0.0.1:8000",
                                        "http://localhost:8000",
                                        "https://poorly-ideal-cobra.ngrok-free.app"]
-    SERVER_PORT: int = 8001
+    SERVER_PORT: int = 8005
 
     def get_db_url(self):
         return (f"{self.DB_SCHEMA}+{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@"

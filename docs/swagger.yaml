@@ -1,0 +1,444 @@
+---
+openapi: 3.1.0
+info:
+  title: WbDataService API
+  description: Welcome to WbDataService's API documentation!
+  version: 0.0.1
+servers:
+- url: http://localhost:8000
+  description: Local server
+- url: https://poorly-ideal-cobra.ngrok-free.app
+  description: Ngrok free server
+paths:
+  "/api/v1/product/":
+    post:
+      tags:
+      - Product
+      summary: Add product
+      description: Add a product from Wb.
+      operationId: add_product_api_v1_product__post
+      parameters:
+      - name: nm_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Product id from Wildberries
+          title: Nm Id
+        description: Product id from Wildberries
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/WbProductModel"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    get:
+      tags:
+      - Product
+      summary: Get product
+      description: Get product from the database by product id.
+      operationId: get_product_by_nm_id_api_v1_product__get
+      parameters:
+      - name: nm_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Product id from Wildberries
+          title: Nm Id
+        description: Product id from Wildberries
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/WbProductModel"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+    delete:
+      tags:
+      - Product
+      summary: Delete product
+      description: Delete product from the database by product id.
+      operationId: delete_product_by_nm_id_api_v1_product__delete
+      parameters:
+      - name: nm_id
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Product id from Wildberries
+          title: Nm Id
+        description: Product id from Wildberries
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/v1/product/all":
+    get:
+      tags:
+      - Product
+      summary: Get all products
+      description: Get all products from the database.
+      operationId: get_all_products_api_v1_product_all_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  "$ref": "#/components/schemas/WbProductModel"
+                type: array
+                title: Response Get All Products Api V1 Product All Get
+  "/api/v1/product/stat/count":
+    post:
+      tags:
+      - Product
+      - ProductStat
+      summary: Get count
+      description: Get the count of product in the base. Specify the fields in the
+        required order for grouping, if omitted the count of all data in the database.
+      operationId: stat_count_products_api_v1_product_stat_count_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - items:
+                  "$ref": "#/components/schemas/ProductFieldsForGroup"
+                type: array
+                uniqueItems: true
+              - type: 'null'
+              title: Fields
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - items:
+                    items: {}
+                    type: array
+                  type: array
+                - type: integer
+                title: Response Stat Count Products Api V1 Product Stat Count Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/v1/product/stat/quantity":
+    post:
+      tags:
+      - Product
+      - ProductStat
+      summary: Get quantity
+      description: Get the  of quantity in stock on Wildberries by current database.
+        Specify the ID of a particular product or specify fields in the desired order
+        for grouping, if they are omitted - counting all data in the database.
+      operationId: stat_quantity_products_api_v1_product_stat_quantity_post
+      parameters:
+      - name: nm_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Product id from Wildberries
+          title: Nm Id
+        description: Product id from Wildberries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - type: array
+                uniqueItems: true
+                items:
+                  "$ref": "#/components/schemas/ProductFieldsForGroup"
+              - type: 'null'
+              title: Fields
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - type: array
+                  items:
+                    type: array
+                    items: {}
+                - type: integer
+                title: Response Stat Quantity Products Api V1 Product Stat Quantity
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/v1/product/stat/price-history":
+    post:
+      tags:
+      - Product
+      - ProductStat
+      summary: Get price history
+      description: Get the price history of products from the database. Specify the
+        product id and grouping fields to get the grouped price history by category
+        for the specified product. Specify only id to get price history for only one
+        product. Specify only fields to get the price history of all products grouped
+        by specified fields. Do not specify anything to get the entire price history
+        of all products.
+      operationId: stat_product_price_history_api_v1_product_stat_price_history_post
+      parameters:
+      - name: nm_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Product id from Wildberries
+          title: Nm Id
+        description: Product id from Wildberries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              anyOf:
+              - type: array
+                uniqueItems: true
+                items:
+                  "$ref": "#/components/schemas/ProductFieldsForGroup"
+              - type: 'null'
+              title: Fields
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - type: array
+                  items:
+                    type: array
+                    items: {}
+                - type: array
+                  items:
+                    "$ref": "#/components/schemas/WbProductPriceModel"
+                title: Response Stat Product Price History Api V1 Product Stat Price
+                  History Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/api/v1/product/stat/min-max-price":
+    post:
+      tags:
+      - Product
+      - ProductStat
+      summary: Get min and max price
+      description: Get the minimum maximum price for the specified interval in months
+      operationId: stat_product_min_max_price_on_monthly_interval_api_v1_product_stat_min_max_price_post
+      parameters:
+      - name: nm_id
+        in: query
+        required: true
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Product id from Wildberries
+          title: Nm Id
+        description: Product id from Wildberries
+      - name: monthly_interval
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 6
+          minimum: 1
+          description: Count of months
+          default: 6
+          title: Monthly Interval
+        description: Count of months
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                prefixItems:
+                - type: integer
+                - type: integer
+                minItems: 2
+                maxItems: 2
+                title: Response Stat Product Min Max Price On Monthly Interval Api
+                  V1 Product Stat Min Max Price Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            "$ref": "#/components/schemas/ValidationError"
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ProductFieldsForGroup:
+      type: string
+      enum:
+      - name
+      - brand
+      - brand_id
+      - site_brand_id
+      - supplier_id
+      - sale
+      - price
+      - sale_price
+      - rating
+      - feedbacks
+      - colors
+      title: ProductFieldsForGroup
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    WbProductModel:
+      properties:
+        nm_id:
+          type: integer
+          title: Nm Id
+        name:
+          type: string
+          title: Name
+        brand:
+          type: string
+          title: Brand
+        brand_id:
+          type: integer
+          title: Brand Id
+        site_brand_id:
+          type: integer
+          title: Site Brand Id
+        supplier_id:
+          type: integer
+          title: Supplier Id
+        sale:
+          type: integer
+          title: Sale
+        price:
+          type: integer
+          title: Price
+        sale_price:
+          type: integer
+          title: Sale Price
+        rating:
+          type: number
+          title: Rating
+        feedbacks:
+          type: integer
+          title: Feedbacks
+        colors:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Colors
+        quantity:
+          type: integer
+          title: Quantity
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+      type: object
+      required:
+      - nm_id
+      - name
+      - brand
+      - brand_id
+      - site_brand_id
+      - supplier_id
+      - sale
+      - price
+      - sale_price
+      - rating
+      - feedbacks
+      - quantity
+      - created_at
+      - updated_at
+      title: WbProductModel
+    WbProductPriceModel:
+      properties:
+        nm_id:
+          type: integer
+          title: Nm Id
+        dt:
+          type: string
+          format: date-time
+          title: Dt
+        price:
+          type: integer
+          title: Price
+      type: object
+      required:
+      - nm_id
+      - dt
+      - price
+      title: WbProductPriceModel
